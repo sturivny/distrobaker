@@ -238,16 +238,19 @@ def handle_message(message):
         component = message.body['name']
         tag = message.body['tag']
         logging.debug('Tagging message received for ' + component + ' (tag: ' + tag + ')')
-        if component in conf['components'].keys() and tag == conf['components'][component]['trigger']:
-            logging.info('Synchronizing ' + component + '...')
-            merge_component(component)
-            if conf['components'][component]['build']:
-                logging.info('Building ' + component + '...')
-                build_component(component)
+        try:
+            if component in conf['components'].keys() and tag == conf['components'][component]['trigger']:
+                logging.info('Synchronizing ' + component + '...')
+                merge_component(component)
+                if conf['components'][component]['build']:
+                    logging.info('Building ' + component + '...')
+                    build_component(component)
+                else:
+                    logging.info('Skipping build for ' + component + '...')
             else:
-                logging.info('Skipping build for ' + component + '...')
-        else:
-            logging.debug('Not configured to sync this component.  Skipping.')
+                logging.debug('Not configured to sync this component.  Skipping.')
+        except KeyError:
+            pass
 
 def main():
     global conf
